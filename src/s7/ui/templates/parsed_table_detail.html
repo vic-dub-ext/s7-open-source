@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}Parsed table — s7{% endblock %}
+{% block content %}
+{% if not table %}
+<p>No such parsed table.</p>
+{% else %}
+<p><a href="/runs/{{ run_id }}/artifacts/{{ artifact.id }}/parsed">&larr; back to fragments</a></p>
+<h1 class="view-title">
+  {{ artifact.file_name }}{% if artifact.sheet_name %} :: {{ artifact.sheet_name }}{% endif %}
+  <span class="muted mono">{{ table.row_count }}&times;{{ table.col_count }}</span>
+</h1>
+
+{% if table.header_rows_json and table.header_rows_json != "[]" %}
+<p class="muted">header: <span class="mono">{{ table.header_rows_json }}</span></p>
+{% endif %}
+
+<div class="parse-inspector">
+  <div class="parse-pane">
+    <h2 class="pane-title">Source{% if source_grid %} <span class="muted mono">(rows {{ source_start_row }}+)</span>{% endif %}</h2>
+    <div class="grid-scroll">
+      {% if source_grid %}
+      <table class="cell-grid" id="source-grid">
+        {% for row in source_grid %}
+        {% set r = source_start_row + loop.index0 %}
+        <tr>
+          {% for val in row %}
+          <td data-row="{{ r }}" data-col="{{ loop.index0 }}">{{ val if val is not none else "" }}</td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </table>
+      {% else %}
+      <pre class="parse-content-fallback">{{ table.content or "(no content)" }}</pre>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="parse-pane">
+    <h2 class="pane-title">Parsed cells</h2>
+    <div class="grid-scroll">
+      <table class="cell-grid">
+        <thead><tr><th>row</th><th>col</th><th>value</th></tr></thead>
+        <tbody>
+          {% for c in cells %}
+          <tr class="parsed-cell-row"
+              data-row="{{ c.sheet_row if c.sheet_row is not none else c.row_index }}"
+              data-col="{{ c.sheet_col if c.sheet_col is not none else c.col_index }}">
+            <td class="mono">{{ c.row_index }}</td>
+            <td class="mono">{{ c.col_index }}</td>
+            <td>{{ c.value if c.value is not none else "" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll(".parsed-cell-row").forEach(function (tr) {
+    tr.addEventListener("click", function () {
+      document.querySelectorAll(".selected").forEach((e) => e.classList.remove("selected"));
+      tr.classList.add("selected");
+      var row = tr.dataset.row, col = tr.dataset.col;
+      var target = document.querySelector(
+        '#source-grid td[data-row="' + row + '"][data-col="' + col + '"]'
+      );
+      if (target) {
+        target.classList.add("selected");
+        target.scrollIntoView({ block: "center", inline: "center" });
+      }
+    });
+  });
+</script>
+{% endif %}
+{% endblock %}

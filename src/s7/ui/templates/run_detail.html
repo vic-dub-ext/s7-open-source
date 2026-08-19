@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}{{ run.paper_key if run else "Run" }} — s7{% endblock %}
+{% block content %}
+{% if not run %}
+<p>No such run.</p>
+{% else %}
+<div class="run-shell">
+  {% include "partials/stage_rail.html" %}
+
+  <section class="stage-panel" id="stage-panel">
+    <p class="muted">Select a stage to inspect its output.</p>
+  </section>
+</div>
+
+<details class="log-drawer" open>
+  <summary>Log stream · {{ run.id }}</summary>
+  <div id="log-lines" class="log-lines"></div>
+</details>
+
+<script>
+  const STAGE_CODES = {{ stage_codes_json | safe }};
+  const statusDot = document.querySelector("#topbar-status");
+  const statusLabel = document.getElementById("topbar-status-label");
+  const logEl = document.getElementById("log-lines");
+  const src = new EventSource("/runs/{{ run.id }}/events/stream");
+  src.addEventListener("open", () => {
+    statusDot.classList.add("is-live");
+    statusLabel.textContent = "sse · streaming";
+  });
+  src.addEventListener("log", (e) => {
+    const ev = JSON.parse(e.data);
+    const line = document.createElement("div");
+    line.className = "log-line log-level-" + ev.level;
+    const time = (ev.ts || "").replace("T", " ").replace(/\+.*$/, "").slice(0, 23);
+    const code = STAGE_CODES[ev.stage] || "—";
+    line.innerHTML =
+      '<span class="log-line-ts mono">' + time + '</span>' +
+      '<span class="log-line-stage mono">' + code + '</span>' +
+      '<span class="log-line-msg">' + ev.message + '</span>';
+    logEl.appendChild(line);
+    logEl.scrollTop = logEl.scrollHeight;
+  });
+  window.addEventListener("beforeunload", () => {
+    statusDot.classList.remove("is-live");
+    statusLabel.textContent = "idle";
+  });
+</script>
+{% endif %}
+{% endblock %}

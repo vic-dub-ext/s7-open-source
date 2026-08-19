@@ -1,0 +1,22 @@
+{% if items|length == 0 %}
+<p class="muted">No classifications yet. Run S3 Classify for this run first.</p>
+{% else %}
+<table class="data-table classification-table">
+  <thead>
+    <tr>
+      <th>File</th>
+      <th>Sheet</th>
+      <th>Class</th>
+      <th>Confidence</th>
+      <th>Flags</th>
+      <th>Reasoning</th>
+      <th>Override</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for c in items %}
+    {% include "partials/classification_row.html" %}
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}

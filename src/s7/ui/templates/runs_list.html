@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Runs — s7{% endblock %}
+{% block content %}
+<h1 class="view-title">Runs</h1>
+
+<form class="new-run-form" method="post" action="/runs/new">
+  <input type="text" name="doi_or_url" placeholder="DOI, doi.org link, or Nature article URL" required>
+  <input type="text" name="paper_key" placeholder="label (optional)">
+  <button type="submit">New run</button>
+</form>
+{% if error %}<p class="form-error">{{ error }}</p>{% endif %}
+<p class="empty-state-hint form-hint">
+  Any paper with a resolvable DOI works, not just the five fixed corpus papers --
+  S0 Acquire is DOI-driven from the start.
+</p>
+
+{% if runs|length == 0 %}
+<div class="empty-state">
+  <p>No runs yet.</p>
+  <p class="empty-state-hint">...or from the fixed test corpus, via the CLI:</p>
+  <pre class="empty-state-cmd">uv run s7 run --paper all</pre>
+</div>
+{% else %}
+<table class="data-table">
+  <thead>
+    <tr>
+      <th>Run</th>
+      <th>Paper</th>
+      <th>Status</th>
+      <th style="width: 110px">S0 → S10</th>
+      <th style="width: 150px">Distribution</th>
+      <th style="text-align: right">Records</th>
+      <th style="text-align: right">Review</th>
+      <th style="text-align: right">Elapsed</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for r in runs %}
+    <tr class="row-link" onclick="window.location='/runs/{{ r.id }}'">
+      <td class="mono" style="color: var(--teal)">{{ r.id[:8] }}</td>
+      <td>
+        <div>{{ r.paper_key }}</div>
+        <div class="mono muted" style="font-size: 10.5px">{{ r.doi }}</div>
+      </td>
+      <td><span class="status-pill status-{{ r.status }}">{{ r.status }}</span></td>
+      <td>
+        <div class="run-stage-strip">
+          {% for s in r.stage_strip %}
+          <span title="{{ s.title }}" class="{{ 'is-reached' if s.reached else '' }}"></span>
+          {% endfor %}
+        </div>
+      </td>
+      <td>
+        {% if r.records %}
+        <div class="run-distribution">
+          {% for d in r.distribution %}
+          {% if d.pct %}<span title="{{ d.title }}" style="background: {{ d.color }}; width: {{ d.pct }}%"></span>{% endif %}
+          {% endfor %}
+        </div>
+        {% else %}<span class="muted mono">—</span>{% endif %}
+      </td>
+      <td class="mono" style="text-align: right">{{ "{:,}".format(r.records) if r.records else "—" }}</td>
+      <td class="mono" style="text-align: right; color: {{ 'var(--amber)' if r.review else 'var(--dim)' }}">{{ "{:,}".format(r.review) if r.review else "0" }}</td>
+      <td class="mono muted" style="text-align: right">{{ r.elapsed }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+{% endblock %}

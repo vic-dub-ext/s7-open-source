@@ -1,0 +1,35 @@
+{% if tree|length == 0 %}
+<p class="muted">No artifacts yet. Run S0 Acquire for this run first.</p>
+{% else %}
+<div class="artifact-tree">
+  {% for node in tree %}
+  {% set a = node.artifact %}
+  <div class="artifact-row">
+    <span class="artifact-kind mono">{{ a.kind }}</span>
+    <span class="artifact-name">{{ a.file_name }}</span>
+    <span class="artifact-mime muted mono">{{ a.mime_type }}</span>
+    <span class="artifact-size mono">{{ a.byte_size|filesizeformat }}</span>
+    {% if a.skip_reason %}
+    <span class="skip-badge" title="{{ a.skip_detail or '' }}">{{ a.skip_reason }}</span>
+    {% endif %}
+  </div>
+  {% if node.children|length > 0 %}
+  <div class="artifact-children">
+    {% for c in node.children %}
+    <div class="artifact-child-row">
+      <span class="artifact-kind mono">sheet</span>
+      <span class="artifact-name">{{ c.sheet_name or c.file_name }}</span>
+      <span class="artifact-dims mono muted">{{ c.row_count }}&times;{{ c.col_count }}</span>
+      {% if c.is_classify_sample %}
+      <span class="sample-badge" title="classify-only sample; S2 parses the full sheet">sample</span>
+      {% endif %}
+      {% if c.skip_reason %}
+      <span class="skip-badge" title="{{ c.skip_detail or '' }}">{{ c.skip_reason }}</span>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% endfor %}
+</div>
+{% endif %}

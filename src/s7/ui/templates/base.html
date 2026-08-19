@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}s7{% endblock %}</title>
+  <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+  <link rel="stylesheet" href="/static/app.css?v={{ css_version }}">
+</head>
+<body>
+  <header class="topbar">
+    <a class="topbar-brand" href="/runs">
+      <span class="wordmark">s7</span>
+      <span class="tagline">The data is in the supplement.</span>
+    </a>
+    <div class="topbar-spacer"></div>
+    <div class="topbar-status" id="topbar-status">
+      <span class="topbar-status-dot"></span>
+      <span id="topbar-status-label">idle</span>
+    </div>
+  </header>
+  <main class="shell">
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

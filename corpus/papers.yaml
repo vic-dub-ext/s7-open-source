@@ -1,0 +1,66 @@
+papers:
+  - key: backman2021
+    doi: 10.1038/s41586-021-04103-z
+    url: https://www.nature.com/articles/s41586-021-04103-z
+    title: Exome sequencing and analysis of 454,787 UK Biobank participants
+    why: |
+      The canonical case. Exome-wide association across 3,994 traits yielding 8,865
+      significant rare-variant associations, which collapse to 564 when keeping only
+      the most significant per gene. The gap between the abstract's number and the
+      supplements' number is the project's entire thesis. Variants tested both
+      individually and aggregated into gene burden tests, so one gene-trait pair
+      spans many rows differing only by mask.
+    tests: [multi_mask, gene_and_variant_level, large_supplement]
+
+  - key: wang2021
+    doi: 10.1038/s41586-021-03855-y
+    url: https://www.nature.com/articles/s41586-021-03855-y
+    title: Rare variant contribution to human disease in 281,104 UK Biobank exomes
+    why: |
+      AstraZeneca PheWAS. 17,361 binary and 1,419 quantitative phenotypes, 1,703
+      significant gene-phenotype associations for binary traits with a median odds
+      ratio of 12.4. Uses collapsing analysis rather than standard burden tests, so
+      column semantics differ from backman2021 and cannot be interpreted without the
+      methods. 83% of associations were undetectable by single-variant tests, which is
+      the clearest argument that gene-level supplementary results carry information
+      variant-level databases lack. Also includes pan-ancestry and ancestry-specific
+      analyses.
+    tests: [collapsing_semantics, binary_and_quantitative, ancestry_strata]
+
+  - key: vanhout2020
+    doi: 10.1038/s41586-020-2853-0
+    url: https://www.nature.com/articles/s41586-020-2853-0
+    title: Exome sequencing and characterization of 49,960 individuals in the UK Biobank
+    why: |
+      Structural stress test. Supplementary Tables 1-16, 23, 25, 26, 29 and 31 --
+      non-contiguous numbering -- plus figures. Individual tables hold heterogeneous
+      content: leave-one-out and single-variant results for specific burden findings,
+      linkage disequilibrium analyses, and conditional analyses, each with a different
+      schema. Multi-row merged headers throughout.
+    tests: [messy_headers, heterogeneous_sheets, conditional_and_loo]
+
+  - key: chen2024depression
+    doi: 10.1038/s41467-024-45774-2
+    url: https://www.nature.com/articles/s41467-024-45774-2
+    title: Whole-exome sequencing in UK Biobank reveals rare genetic architecture for depression
+    why: |
+      The replication trap. Headline finding is SLC2A1 associated with EHR-defined
+      depression at OR 6.01 (95% CI 3.03-11.94, p = 2.96e-7) from damaging missense
+      burden analysis. The same gene failed to replicate in the independent Geisinger
+      DiscovEHR cohort at OR 1.06 (95% CI 0.63-1.75, p = 0.820), reported in a
+      different supplementary table. A pipeline without analysis_role publishes the
+      first and drops the second.
+    tests: [discovery_vs_replication, multi_cohort, contradictory_evidence]
+
+  - key: chen2023cognitive
+    doi: 10.1038/s41588-023-01398-8
+    url: https://www.nature.com/articles/s41588-023-01398-8
+    title: The impact of rare protein coding genetic variation on adult cognitive function
+    why: |
+      Ancestry stratification. Results reported separately for European, South Asian
+      (n = 9,224) and African (n = 8,406) ancestry participants across Supplementary
+      Tables 4-7, with the explicit caveat that non-European analyses were underpowered
+      to replicate the European findings. Merging strata without carrying ancestry and
+      sample size produces incomparable rows. Also uses PTV burden with FDR-based
+      significance alongside exome-wide thresholds.
+    tests: [ancestry_strata, underpowered_strata, fdr_vs_exome_wide]

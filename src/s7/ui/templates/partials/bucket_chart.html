@@ -1,0 +1,49 @@
+<section class="bucket-chart">
+  <div class="bucket-chart-flow">
+    <span class="bucket-chart-flow-label">Artifact flow</span>
+    <div class="flow-track">
+      <div class="flow-track-rule"></div>
+      <div class="flow-track-steps">
+        <span class="flow-step"><span class="flow-step-dot"></span><span class="mono">S0 acquire</span></span>
+        <span class="flow-step"><span class="flow-step-dot"></span><span class="mono">S1 artifacts{% if flow.n1 is not none %} {{ "{:,}".format(flow.n1) }}{% endif %}</span></span>
+        <span class="flow-step"><span class="flow-step-dot"></span><span class="mono">S2 parse{% if flow.n2 is not none %} {{ "{:,}".format(flow.n2) }}{% endif %}</span></span>
+        <span class="flow-step is-current"><span class="flow-step-dot"></span><span class="mono">S3 classify</span></span>
+      </div>
+      {% if flow.running %}
+      <div class="flow-particles">
+        {% for hue in [186, 212, 244, 278, 312, 348, 28, 62] %}
+        <span class="flow-particle" data-anim="particle"
+              style="background: oklch(0.62 0.095 {{ hue }}); animation-delay: {{ loop.index0 * 0.38 }}s"></span>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="bucket-bars">
+    <div class="bucket-axis">
+      <span>{{ axis_top }}</span>
+      <span>0</span>
+    </div>
+    <div class="bucket-cols">
+      {% for b in buckets %}
+      <div class="bucket-col{% if b.is_empty %} is-empty{% endif %}">
+        <span class="bucket-count">{{ b.count_str }}</span>
+        <div class="bucket-bar-track">
+          <div class="bucket-bar-guides"></div>
+          <div class="bucket-bar" style="background: {{ b.color }}; border-top-color: {{ b.cap }}; height: {{ b.h }}px">
+            {% if b.review_h %}<div class="bucket-bar-review" style="height: {{ b.review_h }}px"></div>{% endif %}
+          </div>
+        </div>
+        <span class="bucket-name" title="{{ b.key }}">{{ b.short }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="bucket-chart-footer">
+    <span><span class="bucket-legend-swatch"></span>needs review</span>
+    <div style="flex:1"></div>
+    <span class="bucket-chart-footer-total">{{ "{:,}".format(total) }} classified{% if review_total %} · {{ "{:,}".format(review_total) }} flagged{% endif %}</span>
+  </div>
+</section>

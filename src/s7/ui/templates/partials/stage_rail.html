@@ -1,0 +1,56 @@
+<nav class="stage-rail" id="stage-rail"
+     {% if poll %}hx-get="/runs/{{ run_id }}/rail" hx-trigger="every 2s" hx-swap="outerHTML"{% endif %}>
+  {% if run %}
+  <div class="stage-rail-header">
+    <div class="stage-rail-run-id mono">{{ run.id }}</div>
+    <div class="stage-rail-title">{{ run.paper_key }}</div>
+  </div>
+  {% endif %}
+  <div class="stage-spine-track">
+    <div class="stage-spine-rule"></div>
+    <div class="stage-spine-fill" style="height: {{ spine_pct }}%"></div>
+    {% for s in rail %}
+    <div class="stage-entry stage-{{ s.status }}{% if s.id == selected_stage %} stage-selected{% endif %}">
+      <div class="stage-entry-main"
+           hx-get="/runs/{{ run_id }}/stages/{{ s.id }}/panel"
+           hx-target="#stage-panel"
+           hx-trigger="click">
+        <span class="stage-dot-wrap">
+          <span class="stage-status-dot"></span>
+          <span class="stage-ring"></span>
+        </span>
+        <span class="stage-entry-labels">
+          <span class="stage-entry-labels-top">
+            <span class="stage-code mono">{{ s.code }}</span>
+            <span class="stage-label">{{ s.short_label }}</span>
+          </span>
+          <span class="stage-meter"><span class="stage-meter-fill" style="width: {{ s.meter_pct }}%"></span></span>
+        </span>
+        <span class="stage-counts">
+          {%- if s.status == "running" -%}
+            &hellip;
+          {%- elif s.headline_count is not none -%}
+            {{ s.headline_count }}
+          {%- else -%}
+            &mdash;
+          {%- endif -%}
+        </span>
+      </div>
+      <div class="stage-actions">
+        <button type="button" class="stage-run-btn"
+                title="Run {{ s.label }}"
+                {% if s.status == "running" %}disabled{% endif %}
+                hx-post="/runs/{{ run_id }}/stages/{{ s.id }}/run"
+                hx-target="#stage-rail"
+                hx-swap="outerHTML">Run</button>
+        <button type="button" class="stage-run-btn stage-force-btn"
+                title="Re-run {{ s.label }}, even if it already ran"
+                {% if s.status == "running" %}disabled{% endif %}
+                hx-post="/runs/{{ run_id }}/stages/{{ s.id }}/run?force=1"
+                hx-target="#stage-rail"
+                hx-swap="outerHTML">Force</button>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</nav>

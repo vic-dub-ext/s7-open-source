@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}{{ artifact.file_name if artifact else "Parsed" }} — s7{% endblock %}
+{% block content %}
+<p><a href="/runs/{{ run_id }}">&larr; back to run</a></p>
+{% if not artifact %}
+<p>No such artifact.</p>
+{% else %}
+<h1 class="view-title">
+  {{ artifact.file_name }}{% if artifact.sheet_name %} :: {{ artifact.sheet_name }}{% endif %}
+  <span class="muted mono">{{ tables|length }} fragment{{ "s" if tables|length != 1 else "" }}</span>
+</h1>
+
+<table class="data-table">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Rows&times;Cols</th>
+      <th>Content preview</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for t in tables %}
+    <tr class="row-link" onclick="window.location='/runs/{{ run_id }}/parsed_tables/{{ t.id }}'">
+      <td class="mono">{{ loop.index }}</td>
+      <td class="mono">{{ t.row_count }}&times;{{ t.col_count }}</td>
+      <td class="muted">{{ (t.content or "")[:100] }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+{% endblock %}

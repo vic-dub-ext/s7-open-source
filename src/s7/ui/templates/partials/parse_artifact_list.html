@@ -1,0 +1,26 @@
+{% if summary|length == 0 %}
+<p class="muted">No parsed tables yet. Run S2 Parse for this run first.</p>
+{% else %}
+<table class="data-table">
+  <thead>
+    <tr>
+      <th>Kind</th>
+      <th>File</th>
+      <th>Sheet</th>
+      <th>Fragments</th>
+      <th>Rows</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for s in summary %}
+    <tr class="row-link" onclick="window.location='/runs/{{ run_id }}/artifacts/{{ s.artifact_id }}/parsed'">
+      <td class="mono">{{ s.kind }}</td>
+      <td>{{ s.file_name }}</td>
+      <td>{{ s.sheet_name or "—" }}</td>
+      <td class="mono">{{ s.table_count }}</td>
+      <td class="mono">{{ s.total_rows or 0 }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}

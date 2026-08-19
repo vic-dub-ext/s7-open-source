@@ -1,0 +1,31 @@
+<tr id="class-row-{{ c.id }}" class="{{ 'row-needs-review' if c.needs_review else '' }}">
+  <td>{{ c.file_name }}</td>
+  <td>{{ c.sheet_name or "—" }}</td>
+  <td class="mono">
+    <span class="bucket-swatch" style="background: {{ bucket_color(c.human_override_class or c.classification_id) }}"></span>
+    {{ c.human_override_class or c.classification_id }}
+    {% if c.human_override_class %}<span class="muted">(was {{ c.classification_id }})</span>{% endif %}
+  </td>
+  <td>
+    <div class="confidence-bar"><div class="confidence-fill" style="width: {{ (c.confidence * 100) | round(0) }}%"></div></div>
+    <span class="mono muted confidence-value">{{ "%.2f"|format(c.confidence) }}</span>
+  </td>
+  <td>
+    {% if c.needs_review %}<span class="skip-badge">needs_review</span>{% endif %}
+    {% if c.retried %}<span class="sample-badge">retried</span>{% endif %}
+  </td>
+  <td class="muted insights-preview" title="{{ c.insights }}">{{ c.insights[:140] }}{% if c.insights|length > 140 %}&hellip;{% endif %}</td>
+  <td>
+    <form class="override-form"
+          hx-post="/runs/{{ run_id }}/classifications/{{ c.id }}/override"
+          hx-target="#class-row-{{ c.id }}"
+          hx-swap="outerHTML">
+      <select name="override_class">
+        {% for cid in classification_ids %}
+        <option value="{{ cid }}" {% if cid == (c.human_override_class or c.classification_id) %}selected{% endif %}>{{ cid }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit">Set</button>
+    </form>
+  </td>
+</tr>

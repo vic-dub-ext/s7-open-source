@@ -1,0 +1,11 @@
+<div class="panel-header">
+  <h2 class="panel-title">S3 · Classify</h2>
+  <span class="panel-meta mono">{{ items|length }} artifacts classified</span>
+</div>
+
+{% include "partials/bucket_chart.html" %}
+
+<div class="panel-header" style="margin: 22px 0 8px">
+  <h3 class="panel-title" style="font-size: 11px">Classified artifacts</h3>
+</div>
+{% include "partials/classification_list.html" %}
